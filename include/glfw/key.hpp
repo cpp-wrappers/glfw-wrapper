@@ -16,8 +16,9 @@ struct key {
     };
 };
 
-struct {
+class keys {
+public:
     static constexpr key space{32};
-} keys;
+};
 
 }

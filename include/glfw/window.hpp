@@ -4,6 +4,7 @@
 #include <vector>
 #include <filesystem>
 #include <functional>
+#include <stdexcept>
 
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
@@ -92,14 +93,15 @@ public:
 		uint width,
 		uint height,
 		std::string title,
-		std::initializer_list<window::hints::hint> hints
+		std::initializer_list<window::hints::hint> hints = {}
 	) {
-		glfwInit();
+		if(!glfwInit()) throw std::runtime_error("error while initializing glfw");
 
 		for (auto hint : hints)
 			hint.set_hint();
 		
-		glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
+		if(!(raw = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr)))
+			throw std::runtime_error("error while creating glfw window");
 		glfwSetWindowUserPointer(raw, this);
 	}
 
@@ -155,7 +157,7 @@ public:
 	Vec2 framebuffer_size() {
 		int w;
 		int h;
-		glfwFramebufferSize();
+		glfwGetFramebufferSize(raw, &w, &h);
 		return {w, h};
 	}
 };

@@ -1,4 +1,6 @@
-../../bash build.sh
-mkdir build
+cd ..
+bash prepare_glfw.sh
+cd window
+mkdir build -p
 cd build
-$CXX --std=c++17 $CXXARGS main.cpp -o window
+clang++ -ggdb --std=c++17 -o window -I../../../include -I../../../glfw/include ../main.cpp ../../../glfw/build/src/libglfw.so

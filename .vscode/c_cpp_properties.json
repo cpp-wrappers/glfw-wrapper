@@ -3,6 +3,7 @@
         {
             "name": "Linux",
             "forcedInclude": ["${workspaceFolder}/glfw/include/GLFW/glfw3.h"],
+            "includePath": ["${workspaceFolder}/include"],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c11",
             "cppStandard": "c++17",

@@ -3,9 +3,7 @@
 #include <vector>
 
 namespace glfw {
-	namespace internal {
-		void init();
+	void poll_events() {
+		glfwPollEvents();
 	}
-
-	void poll_events();
 }

@@ -9,55 +9,53 @@
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 
-#include "key.hpp"
+#include "pressable.hpp"
+#include "monitor.hpp"
 
 namespace glfw {
 
 class window {
-	using error_callback = void(int code, std::string desc);
-	using window_pos_callback = void(int x, int y);
-	using window_size_callback = void(int width, int height);
-	using window_close_callback = void();
-	using window_refresh_callback = void();
-	using window_focus_callback = void(bool);
-	using window_iconify_callback = void(bool);
-	using window_maximize_callback = void(bool);
-	using framebuffer_size_callback = void(int width, int height);
-	using window_content_scale_callback = void(float xscale, float yscale);
-	using mouse_button_callback = void(int button, int action, int mods);
-	using cursor_pos_callback = void(double xpos, double ypos);
-	using cursor_enter_callback = void(bool);
-	using scroll_callback = void(double xoffset, double yoffset);
-	using key_callback = void(glfw::key key, int scancode, key::action action, const std::vector<key::modifier>& mods);
-	using char_callback = void(uint codepoint);
-	using char_mods_callback = void(uint codepoint, int mods);
-	using drop_callback = void(const std::vector<std::filesystem::path>&);
-	using monitor_callback = void(int event);
-	using joystick_callback = void(int jid, int event);
+	using window_pos_callback = std::function<void(int x, int y)>;
+	using window_size_callback = std::function<void(int width, int height)>;
+	using window_close_callback = std::function<void()>;
+	using window_refresh_callback = std::function<void()>;
+	using window_focus_callback = std::function<void(bool)>;
+	using window_iconify_callback = std::function<void(bool)>;
+	using window_maximize_callback = std::function<void(bool)>;
+	using framebuffer_size_callback = std::function< void(int width, int height)>;	
+	using window_content_scale_callback = std::function<void(float xscale, float yscale)>;
+	using mouse_button_callback = std::function<void(mouse_button button, mouse_button::action action, const std::vector<key::modifier>& mods)>;
+	using cursor_pos_callback = std::function<void(double xpos, double ypos)>;
+	using cursor_enter_callback = std::function<void(bool entered)>;
+	using scroll_callback = std::function<void(double xoffset, double yoffset)>;
+	using key_callback = std::function<void(glfw::key key, int scancode, key::action action, const std::vector<key::modifier>& mods)>;
+	using char_callback = std::function<void(uint codepoint)>;
+	//using char_mods_callback = std::function<void(uint codepoint, int mods)>;
+	using drop_callback = std::function<void(const std::vector<std::filesystem::path>&)>;
+	//using joystick_callback = std::function<void(int jid, int event)>;
 
 public:
 	struct {
 		struct {
-			std::function<error_callback> error;
-			std::function<window_pos_callback> win_pos;
-			std::function<window_size_callback> win_size;
-			std::function<window_close_callback> win_close;
-			std::function<window_refresh_callback> win_refresh;
-			std::function<window_focus_callback> win_focus;
-			std::function<window_iconify_callback> win_icon;
-			std::function<window_maximize_callback> win_maximize;
-			std::function<framebuffer_size_callback> framebuffer_size;
-			std::function<window_content_scale_callback> win_content_scale;
-			std::function<mouse_button_callback> mouse_button;
-			std::function<cursor_pos_callback> cursor_pos;
-			std::function<cursor_enter_callback> cursor_enter;
-			std::function<scroll_callback> scroll;
-			std::function<key_callback> key;
-			std::function<char_callback> unicode_char;
-			std::function<char_mods_callback> char_mods;
-			std::function<drop_callback> drop;
-			std::function<monitor_callback> monitor;
-			std::function<joystick_callback> joystick;
+			window_pos_callback win_pos;
+			window_size_callback win_size;
+			window_close_callback win_close;
+			window_refresh_callback win_refresh;
+			window_focus_callback win_focus;
+			window_iconify_callback win_icon;
+			window_maximize_callback win_maximize;
+			framebuffer_size_callback framebuffer_size;
+			window_content_scale_callback win_content_scale;
+			mouse_button_callback mouse_button;
+			cursor_pos_callback cursor_pos;
+			cursor_enter_callback cursor_enter;
+			scroll_callback scroll;
+			key_callback key;
+			char_callback unicode_char;
+			//char_mods_callback char_mods;
+			drop_callback drop;
+			monitor_callback monitor;
+			joystick_callback joystick;
 		} callbacks_table;
 	} internal;
 private: GLFWwindow* raw;
@@ -107,6 +105,12 @@ public:
 
 	window(window&& r) = default;
 
+	~window() {
+		if(raw == nullptr) return;
+		glfwDestroyWindow(raw);
+		raw = nullptr;
+	}
+
 	void make_context_current() {
 		glfwMakeContextCurrent(raw);
 	}
@@ -124,6 +128,147 @@ public:
 	}
 
 public:
+	void set_window_pos_callback(window_pos_callback cb) {
+		internal.callbacks_table.win_pos = cb;
+		glfwSetWindowPosCallback(raw, [](GLFWwindow* w, int x, int y) {
+			((glfw::window*)glfwGetWindowUserPointer(w))
+				->internal.callbacks_table.win_pos(x, y);
+		});
+	}
+
+	void set_window_size_callback(window_size_callback cb) {
+		internal.callbacks_table.win_size = cb;
+		glfwSetWindowSizeCallback(raw, [](GLFWwindow* raw_, int w, int h) {
+			((glfw::window*)glfwGetWindowUserPointer(raw_))
+				->internal.callbacks_table.win_size(w, h);
+		});
+	}
+
+	void set_close_callback(window_close_callback cb) {
+		internal.callbacks_table.win_close = cb;
+		glfwSetWindowCloseCallback(raw, [](GLFWwindow* raw_) {
+			((glfw::window*)glfwGetWindowUserPointer(raw_))
+				->internal.callbacks_table.win_close();
+		});
+	}
+
+	void set_refresh_callback(window_refresh_callback cb) {
+		internal.callbacks_table.win_refresh = cb;
+		glfwSetWindowRefreshCallback(raw, [](GLFWwindow* raw_) {
+			((glfw::window*)glfwGetWindowUserPointer(raw_))
+				->internal.callbacks_table.win_refresh();
+		});
+	}
+
+	void set_focus_callback(window_focus_callback cb) {
+		internal.callbacks_table.win_focus = cb;
+		glfwSetWindowFocusCallback(raw, [](GLFWwindow* raw_, int v) {
+			((glfw::window*)glfwGetWindowUserPointer(raw_))
+				->internal.callbacks_table.win_focus(v);
+		});
+	}
+
+	void set_iconify_callback(window_iconify_callback cb) {
+		internal.callbacks_table.win_icon = cb;
+		glfwSetWindowIconifyCallback(raw, [](GLFWwindow* raw_, int v) {
+			((glfw::window*)glfwGetWindowUserPointer(raw_))
+				->internal.callbacks_table.win_icon(v);
+		});
+	}
+
+	void set_maximize_callback(window_maximize_callback cb) {
+		internal.callbacks_table.win_maximize = cb;
+		glfwSetWindowMaximizeCallback(raw, [](GLFWwindow* raw_, int v) {
+			((glfw::window*)glfwGetWindowUserPointer(raw_))
+				->internal.callbacks_table.win_maximize(v);
+		});
+	}
+
+	void set_framebuffer_size_callback(framebuffer_size_callback cb) {
+		internal.callbacks_table.framebuffer_size = cb;
+		glfwSetFramebufferSizeCallback(raw, [](GLFWwindow* w_, int w, int h) {
+			((glfw::window*)glfwGetWindowUserPointer(w_))
+				->internal.callbacks_table.framebuffer_size(w, h);
+		});
+	}
+
+	void set_window_content_cale_callback(window_content_scale_callback cb) {
+		internal.callbacks_table.win_content_scale = cb;
+		glfwSetWindowContentScaleCallback(raw, [](GLFWwindow* w_, float xs, float ys) {
+			((glfw::window*)glfwGetWindowUserPointer(w_))
+				->internal.callbacks_table.win_content_scale(xs, ys);
+		});
+	}
+
+	void set_mouse_button_callback(mouse_button_callback cb) {
+		internal.callbacks_table.mouse_button = cb;
+		glfwSetMouseButtonCallback(raw, [](GLFWwindow* w, int mb, int action, int mods) {
+			std::vector<key::modifier> v;
+			for(uint i = 0; i < sizeof(uint); i++ ) {
+				unsigned mask = 1 << i;
+				if(mods & mask) v.push_back((key::modifier)mask);
+			}
+
+			((glfw::window*)glfwGetWindowUserPointer(w_))
+				->internal.callbacks_table.mouse_button(mouse_button{mb}, (mouse_button::action)action, v);
+		});
+	}
+
+	void set_cursor_pos_callback(cursor_pos_callback cb) {
+		internal.callbacks_table.cursor_pos = cb;		
+		glfwSetCursorPosCallback(raw, [](GLFWwindow* w_, double x, double y) {
+			((glfw::window*)glfwGetWindowUserPointer(w_))
+				->internal.callbacks_table.cursor_pos(x, y);
+		});
+	}
+
+	void set_cursor_enter_callback(cursor_enter_callback cb) {
+		internal.callbacks_table.cursor_enter = cb;
+		glfwSetCursorEnterCallback(raw, [](GLFWwindow* w_, int entered) {
+			((glfw::window*)glfwGetWindowUserPointer(w_))
+				->internal.callbacks_table.cursor_enter(entered);
+		});
+	}
+
+	void set_croll_callback(scroll_callback cb) {
+		internal.callbacks_table.scroll = cb;
+		glfwSetScrollCallback(raw, [](GLFWwindow* w_, double xo, double yo) {
+			((glfw::window*)glfwGetWindowUserPointer(w_))
+				->internal.callbacks_table.scroll(xo, yo);
+		});
+	}
+
+	void set_key_callback(key_callback cb) {
+		internal.callbacks_table.key = cb;
+
+		glfwSetKeyCallback(raw, [](GLFWwindow* w, int k, int sc, int a, int mods) {
+			std::vector<key::modifier> v;
+			for(uint i = 0; i < sizeof(uint); i++ ) {
+				unsigned mask = 1 << i;
+				if(mods & mask) v.push_back((key::modifier)mask);
+			}
+
+			((glfw::window*)glfwGetWindowUserPointer(w))
+				->internal.callbacks_table.key(glfw::key{k}, sc, (glfw::key::action)a, v);
+		});
+	}
+	
+	void set_char_callback(char_callback cb) {
+		internal.callbacks_table.unicode_char = cb;
+		glfwSetCharCallback(raw, [](GLFWwindow* w_, uint c) {
+			((glfw::window*)glfwGetWindowUserPointer(w_))
+				->internal.callbacks_table.unicode_char(c);
+		});
+	}
+
+	// Deprecated, will be removed in 4.0 (yay)
+	/*void set_char_mods_callback(char_mods_callback cb) {
+		internal.callbacks_table.char_mods = cb;
+		glfwSetCharModsCallback(raw, [](GLFWwindow* w_, uint c, int mods) {
+			
+		});
+	}*/
+
 	void set_drop_callback(drop_callback cb) {
 		internal.callbacks_table.drop = cb;
 		glfwSetDropCallback(raw, [](GLFWwindow* w, int c, const char** p) {
@@ -132,24 +277,8 @@ public:
 			for(int i = 0; i < c; i++)
 				v.emplace_back(std::string{p[i]});
 
-			auto w_ = (glfw::window*)glfwGetWindowUserPointer(w);
-			w_->internal.callbacks_table.drop(v);
-		});
-	}
-
-	void set_key_callback(key_callback cb) {
-		internal.callbacks_table.key = cb;
-
-		glfwSetKeyCallback(raw, [](GLFWwindow* w, int k, int sc, int a, int mods) {
-			auto w_ = (glfw::window*)glfwGetWindowUserPointer(w);
-
-			std::vector<key::modifier> v;
-			for(uint i = 0; i < sizeof(uint); i++ ) {
-				unsigned mask = 1 << i;
-				if(mods & mask) v.push_back((key::modifier)mask);
-			}
-
-			w_->internal.callbacks_table.key(glfw::key{k}, sc, (glfw::key::action)a, v);
+			((glfw::window*)glfwGetWindowUserPointer(w))
+				->internal.callbacks_table.drop(v);
 		});
 	}
 

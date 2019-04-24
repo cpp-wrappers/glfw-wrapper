@@ -54,8 +54,8 @@ public:
 			char_callback unicode_char;
 			//char_mods_callback char_mods;
 			drop_callback drop;
-			monitor_callback monitor;
-			joystick_callback joystick;
+			//monitor_callback monitor;
+			//joystick_callback joystick;
 		} callbacks_table;
 	} internal;
 private: GLFWwindow* raw;
@@ -202,7 +202,7 @@ public:
 
 	void set_mouse_button_callback(mouse_button_callback cb) {
 		internal.callbacks_table.mouse_button = cb;
-		glfwSetMouseButtonCallback(raw, [](GLFWwindow* w, int mb, int action, int mods) {
+		glfwSetMouseButtonCallback(raw, [](GLFWwindow* w_, int mb, int action, int mods) {
 			std::vector<key::modifier> v;
 			for(uint i = 0; i < sizeof(uint); i++ ) {
 				unsigned mask = 1 << i;

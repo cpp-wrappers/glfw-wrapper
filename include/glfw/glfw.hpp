@@ -1,25 +1,17 @@
-#include "window.hpp"
-#include <string>
-#include <vector>
+#pragma once
 
-#include "monitor.hpp"
+#include <string>
+#include <functional>
 
 namespace glfw {
-	
+	void poll_events();
 
-	inline void poll_events() {
-		glfwPollEvents();
-	}
+	struct error {
+		int code;
+		std::string_view description;
+	};
 
-	using error_callback = void(int code, const char* desc);
+	using error_callback_t = std::function<void(error)>;
 
-	inline void set_error_callback(error_callback cb) {
-		glfwSetErrorCallback(cb);
-	}
-
-	using monitor_callback = void(monitor::event event);
-
-	inline void set_monitor_callback(monitor_callback cb) {
-		glfwSetMonitorCallback((GLFWmonitorfun)cb);
-	}
+	void error_callback(error_callback_t cb);
 }

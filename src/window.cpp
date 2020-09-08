@@ -26,12 +26,12 @@ window::hints& window::hints::gl_core_profile() {
     return *this;
 }
 
-window::window(uni::vec2ui size, std::string title, window::hints hints) {
+window::window(unsigned width, unsigned height, std::string title, window::hints hints) {
     if(!glfwInit()) throw std::runtime_error("error while initializing glfw");
     glfwDefaultWindowHints();
     hints.apply();
 		
-    if(!(handle = glfwCreateWindow(size.width, size.height, title.c_str(), nullptr, nullptr)))
+    if(!(handle = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr)))
         throw std::runtime_error("error while creating glfw window");
     glfwSetWindowUserPointer((GLFWwindow*)handle, this);
 }
@@ -53,11 +53,11 @@ void window::make_context_current() { glfwMakeContextCurrent((GLFWwindow*)handle
 bool window::should_close() { return glfwWindowShouldClose((GLFWwindow*)handle); }
 void window::swap_buffers() { glfwSwapBuffers((GLFWwindow*)handle); }
 
-void window::position(uni::vec2i pos) {
-    glfwSetWindowPos((GLFWwindow*)handle, pos.x, pos.y);
+void window::position(int x, int y) {
+    glfwSetWindowPos((GLFWwindow*)handle, x, y);
 }
 
-uni::vec2ui window::framebuffer_size() {
+std::pair<unsigned, unsigned> window::framebuffer_size() {
     int w, h; glfwGetFramebufferSize((GLFWwindow*)handle, &w, &h);
     assert(w >= 0 and h >= 0);
     return {(unsigned)w, (unsigned)h};
@@ -67,7 +67,7 @@ static glfw::window* get_window(GLFWwindow* raw) {
     return ((glfw::window*)glfwGetWindowUserPointer(raw));
 }
 
-void window::set_window_pos_callback(window_pos_callback cb) {
+void window::set_window_pos_callback(window_pos_callback<> cb) {
     callbacks.win_pos = cb;
     glfwSetWindowPosCallback((GLFWwindow*)handle, [](GLFWwindow* w, int x, int y) {
         get_window(w)->callbacks.win_pos({x, y});
@@ -78,7 +78,7 @@ void window::set_window_size_callback(window_size_callback cb) {
     callbacks.win_size = cb;
     glfwSetWindowSizeCallback((GLFWwindow*)handle, [](GLFWwindow* raw, int w, int h) {
         assert(w >= 0 and h >= 0);
-        get_window(raw)->callbacks.win_size({(unsigned)w, (unsigned)h});
+        get_window(raw)->callbacks.win_size((unsigned)w, (unsigned)h);
     });
 }
 
@@ -123,14 +123,14 @@ void window::set_framebuffer_size_callback(framebuffer_size_callback cb) {
     callbacks.framebuffer_size = cb;
     glfwSetFramebufferSizeCallback((GLFWwindow*)handle, [](GLFWwindow* raw, int w, int h) {
         assert(w >= 0 and h >= 0);
-        get_window(raw)->callbacks.framebuffer_size({(unsigned)w, (unsigned)h});
+        get_window(raw)->callbacks.framebuffer_size((unsigned)w, (unsigned)h);
     });
 }
 
 void window::set_window_content_cale_callback(window_content_scale_callback cb) {
     callbacks.win_content_scale = cb;
     glfwSetWindowContentScaleCallback((GLFWwindow*)handle, [](GLFWwindow* w_, float xs, float ys) {
-        get_window(w_)->callbacks.win_content_scale({xs, ys});
+        get_window(w_)->callbacks.win_content_scale(xs, ys);
     });
 }
 
@@ -150,7 +150,7 @@ void window::set_mouse_button_callback(mouse_button_callback cb) {
 void window::set_cursor_pos_callback(cursor_pos_callback cb) {
     callbacks.cursor_pos = cb;
     glfwSetCursorPosCallback((GLFWwindow*)handle, [](GLFWwindow* raw, double x, double y) {
-        get_window(raw)->callbacks.cursor_pos({x, y});
+        get_window(raw)->callbacks.cursor_pos(x, y);
     });
 }
 
@@ -165,7 +165,7 @@ void window::set_cursor_enter_callback(cursor_enter_callback cb) {
 void window::set_croll_callback(scroll_callback cb) {
     callbacks.scroll = cb;
     glfwSetScrollCallback((GLFWwindow*)handle, [](GLFWwindow* raw, double xo, double yo) {
-        get_window(raw)->callbacks.scroll({xo, yo});
+        get_window(raw)->callbacks.scroll(xo, yo);
     });
 }
 

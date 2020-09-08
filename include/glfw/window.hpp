@@ -6,24 +6,27 @@
 #include <functional>
 
 #include "key.hpp"
-#include "unified_math/vec.hpp"
+#include "unified_math/vec2.hpp"
+#include "unified_math/convert.hpp"
+#include <memory>
 
 namespace glfw {
 
 class window {
-	using window_pos_callback = std::function<void(uni::vec2i)>;
-	using window_size_callback = std::function<void(uni::vec2ui)>;
+	template<uni::vec2i V = uni::pair_i>
+	using window_pos_callback = std::function<void(V)>;
+	using window_size_callback = std::function<void(unsigned, unsigned)>;
 	using window_close_callback = std::function<void()>;
 	using window_refresh_callback = std::function<void()>;
 	using window_focus_callback = std::function<void(bool)>;
 	using window_iconify_callback = std::function<void(bool)>;
 	using window_maximize_callback = std::function<void(bool)>;
-	using framebuffer_size_callback = std::function< void(uni::vec2ui)>;
-	using window_content_scale_callback = std::function<void(uni::vec2f)>;
+	using framebuffer_size_callback = std::function< void(unsigned, unsigned)>;
+	using window_content_scale_callback = std::function<void(float, float)>;
 	using mouse_button_callback = std::function<void(mouse_button button, mouse_button::action action, const std::vector<key::modifier>& mods)>;
-	using cursor_pos_callback = std::function<void(uni::vec2d)>;
+	using cursor_pos_callback = std::function<void(double, double)>;
 	using cursor_enter_callback = std::function<void(bool entered)>;
-	using scroll_callback = std::function<void(uni::vec2d)>;
+	using scroll_callback = std::function<void(double, double)>;
 	using key_callback = std::function<void(glfw::key key, int scancode, key::action action, const std::vector<key::modifier>& mods)>;
 	using char_callback = std::function<void(unsigned codepoint)>;
 	//using char_mods_callback = std::function<void(uint codepoint, int mods)>;
@@ -31,7 +34,7 @@ class window {
 	//using joystick_callback = std::function<void(int jid, int event)>;
 
 	struct {
-		window_pos_callback win_pos;
+		window_pos_callback<> win_pos;
 		window_size_callback win_size;
 		window_close_callback win_close;
 		window_refresh_callback win_refresh;
@@ -71,21 +74,38 @@ public:
 		hints& gl_core_profile();
 	};
 
-	window(uni::vec2ui size, std::string title, window::hints hints = {});
+	window(unsigned width, unsigned height, std::string title, window::hints hints = {});
+	window(uni::vec2ui auto size, std::string title, window::hints hints = {})
+	: window(std::get<0>(size), std::get<1>(size), title, hints){}
+
 	window(window&& r);
 	~window();
 
 	void make_context_current();
 	bool should_close();
 	void swap_buffers();
-	void position(uni::vec2i position);
-	uni::vec2ui framebuffer_size();
-
-	operator bool() {
-		return !should_close();
+	void position(int x, int y);
+	void position(uni::vec2i auto position) {
+		position(std::get<0>(position), std::get<1>(position));
 	}
 
-	void set_window_pos_callback(window_pos_callback callback);
+	std::pair<unsigned, unsigned> framebuffer_size();
+
+	template<uni::vec2ui V>
+	V framebuffer_size() {
+		return {framebuffer_size()};
+	}
+
+	operator bool() {return !should_close();}
+
+
+	void set_window_pos_callback(window_pos_callback<> callback);
+	template<uni::vec2i Vec>
+	void set_window_pos_callback(window_pos_callback<Vec> callback) {
+		set_window_pos_callback<>([&](auto pos){
+			callback(uni::convert(pos));
+		});
+	}
 	void set_window_size_callback(window_size_callback callback);
 	void set_close_callback(window_close_callback callback);
 	void set_refresh_callback(window_refresh_callback callback);

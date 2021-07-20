@@ -33,12 +33,27 @@ inline struct library_t {
 		return result.value();
 	}
 
-	void try_poll_events() const noexcept {
+	tl::expected<void, glfw::error>
+	try_poll_events() const noexcept {
+		internal::poll_events();
 
+		auto code = get_error_code();
+		if(code != 0) {
+			return tl::unexpected{ glfw::error{} };
+		}
+
+		return {};
+	}
+
+	void poll_events() const {
+		auto result = try_poll_events();
+		if(!result) {
+			throw result.error();
+		}
 	}
 
 	~library_t() {
-		internal::terminate();
+		//internal::terminate();
 	}
 
 } library;

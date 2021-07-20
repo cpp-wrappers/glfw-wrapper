@@ -4,22 +4,26 @@
 
 namespace glfw {
 
-struct key {
-	int code;
+namespace key {
+	using code = int;
 
-	enum class action {
+	enum class action : int {
 		release, press, repeat
 	};
 
-	enum class modifier {
-		shift = 1, control = 1<<1, alt = 1<<2, super = 1<<3
+	using modifier = int;
+
+	namespace modifiers {
+		inline constexpr modifier
+			shift = 1,
+			control = 1 << 1,
+			alt = 1 << 2,
+			super = 1<<3;
 	};
 };
 
-using mouse_button = key;
-
 namespace keys {
-	static constexpr key
+	inline constexpr key::code
 		unknown{-1},
 		space{32},
 		apostrophe{39},
@@ -143,9 +147,8 @@ namespace keys {
 		menu{348};
 };
 
-class mouse_buttons {
-public:
-	static constexpr mouse_button
+namespace mouse_buttons {
+	inline constexpr key::code
 		mb1{0},
 		mb2{1},
 		mb3{2},
@@ -158,5 +161,6 @@ public:
 		left{mb1},
 		right{mb2},
 		middle{mb3};
-};
+}
+;
 }

@@ -53,7 +53,7 @@ inline struct library_t {
 	}
 
 	~library_t() {
-		//internal::terminate();
+		internal::terminate();
 	}
 
 } library;

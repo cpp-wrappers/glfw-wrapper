@@ -18,6 +18,10 @@ void internal::poll_events() noexcept {
 	glfwPollEvents();
 }
 
+void internal::window_hint(int hint, int value) noexcept {
+	glfwWindowHint(hint, value);
+}
+
 tl::expected<std::reference_wrapper<glfw::window>, glfw::error>
 library_t::try_create_window(unsigned width, unsigned height, const char* title) const noexcept {
 	if(GLFWwindow* handle = glfwCreateWindow(width, height, title, nullptr, nullptr)) {

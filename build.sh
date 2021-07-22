@@ -1,3 +1,4 @@
+pushd `dirname $0`
 mkdir -p build/objects
 
 compile() {
@@ -11,3 +12,4 @@ compile() {
 compile error
 compile library
 compile window
+popd

@@ -20,37 +20,44 @@ public:
 	void make_context_current();
 	bool should_close();
 	void swap_buffers();
-	void position(int x, int y);
-	void position(uni::vec2i auto pos) {
-		position(get<0>(pos), get<1>(pos));
+	void pos(int x, int y);
+	void pos(uni::vec2i auto pos) {
+		pos(get<0>(pos), get<1>(pos));
+	}
+
+	void cursor_pos(double x, double y);
+	void cursor_pos(uni::vec2d auto pos) {
+		pos(get<0>(pos), get<1>(pos));
 	}
 
 	std::pair<unsigned, unsigned> framebuffer_size();
+	std::pair<unsigned, unsigned> size();
 
-	template<uni::vec2u V>
+	template<uni::any_vec2 V>
 	V framebuffer_size() {
-		return { framebuffer_size() };
+		auto s = framebuffer_size();
+		return { get<0>(s), get<1>(s) };
 	}
 
 	explicit operator bool() { return !should_close(); }
 
-	using window_pos_callback = void(*)(glfw::window* w, int x, int y);
-	void set_window_pos_callback(window_pos_callback callback) const noexcept;
+	using pos_callback = void(*)(glfw::window* w, int x, int y);
+	void set_pos_callback(pos_callback callback) const noexcept;
 
-	using window_size_callback = void(*)(glfw::window* w, int width, int height);
-	void set_window_size_callback(window_size_callback callback) const noexcept;
+	using size_callback = void(*)(glfw::window* w, int width, int height);
+	void set_size_callback(size_callback callback) const noexcept;
 
-	using window_close_callback = void(*)(glfw::window* w);
-	void set_close_callback(window_close_callback callback) const noexcept;
+	using close_callback = void(*)(glfw::window* w);
+	void set_close_callback(close_callback callback) const noexcept;
 
-	using window_refresh_callback = void(*)(glfw::window* w);
-	void set_refresh_callback(window_refresh_callback callback) const noexcept;
+	using refresh_callback = void(*)(glfw::window* w);
+	void set_refresh_callback(refresh_callback callback) const noexcept;
 
-	using window_focus_callback = void(*)(glfw::window* w, int focused);
-	void set_focus_callback(window_focus_callback callback) const noexcept;
+	using focus_callback = void(*)(glfw::window* w, int focused);
+	void set_focus_callback(focus_callback callback) const noexcept;
 
-	using window_iconify_callback = void(*)(glfw::window* w, int iconified);
-	void set_iconify_callback(window_iconify_callback callback) const noexcept;
+	using iconify_callback = void(*)(glfw::window* w, int iconified);
+	void set_iconify_callback(iconify_callback callback) const noexcept;
 
 	using window_maximize_callback = void(*)(glfw::window* w, int maximized);
 	void set_maximize_callback(window_maximize_callback callback) const noexcept;
@@ -73,7 +80,7 @@ public:
 	using scroll_callback = void(*)(glfw::window* w, double offset_x, double offset_y);
 	void set_scroll_callback(scroll_callback callback) const noexcept;
 
-	using key_callback = void(*)(glfw::window* w, key::code code, int scancode, glfw::key::action action, glfw::key::modifier modifiers);
+	using key_callback = void(*)(glfw::window* w, glfw::key::code code, int scancode, glfw::key::action action, glfw::key::modifier modifiers);
 	void set_key_callback(key_callback callback) const noexcept;
 
 	using char_callback = void(*)(glfw::window* w, unsigned codepoint);

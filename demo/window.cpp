@@ -3,6 +3,8 @@ bash build.sh
 if ! $CXX \
 	--config ./compile_flags.txt \
 	-g \
+	-fsanitize=address \
+	-fsanitize=undefined \
 	-Lbuild \
 	-o build/window \
 	demo/window.cpp \
@@ -20,12 +22,16 @@ exit
 int main() {
 	glfw::window& w = glfw::library.create_window(800, 600, "Window");
 
-	w.set_window_pos_callback([](glfw::window* _, int x, int y) {
-		std::cout << "window pos: x = " << x << ", y = " << y << std::endl;
+	w.set_pos_callback([](glfw::window* _, int x, int y) {
+		std::cout << "pos: x = " << x << ", y = " << y << std::endl;
 	});
 
-	w.set_window_size_callback([](glfw::window* _, int w, int h) {
-		std::cout << "window size: w = " << w << ",h = " << h << std::endl;
+	w.set_size_callback([](glfw::window* _, int w, int h) {
+		std::cout << "size: w = " << w << ", h = " << h << std::endl;
+	});
+
+	w.set_framebuffer_size_callback([](glfw::window* _, int w, int h) {
+		std::cout << "framebuffer size: w = " << w << ", h = " << h << std::endl;
 	});
 
 	w.set_focus_callback([](glfw::window* w, int focused) {

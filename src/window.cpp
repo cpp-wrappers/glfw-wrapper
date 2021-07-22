@@ -10,8 +10,12 @@ void window::make_context_current() { glfwMakeContextCurrent((GLFWwindow*)this);
 bool window::should_close() { return glfwWindowShouldClose((GLFWwindow*)this); }
 void window::swap_buffers() { glfwSwapBuffers((GLFWwindow*)this); }
 
-void window::position(int x, int y) {
+void window::pos(int x, int y) {
 	glfwSetWindowPos((GLFWwindow*)this, x, y);
+}
+
+void window::cursor_pos(double x, double y) {
+	glfwSetCursorPos((GLFWwindow*)this, x, y);
 }
 
 std::pair<unsigned, unsigned> window::framebuffer_size() {
@@ -20,27 +24,33 @@ std::pair<unsigned, unsigned> window::framebuffer_size() {
 	return {(unsigned)w, (unsigned)h};
 }
 
-void window::set_window_pos_callback(window_pos_callback callback) const noexcept {
+std::pair<unsigned, unsigned> window::size() {
+	int w, h; glfwGetWindowSize((GLFWwindow*)this, &w, &h);
+	assert(w >= 0 and h >= 0);
+	return {(unsigned)w, (unsigned)h};
+}
+
+void window::set_pos_callback(pos_callback callback) const noexcept {
 	glfwSetWindowPosCallback((GLFWwindow*)this, (GLFWwindowposfun) callback);
 }
 
-void window::set_window_size_callback(window_size_callback callback) const noexcept {
+void window::set_size_callback(size_callback callback) const noexcept {
 	glfwSetWindowSizeCallback((GLFWwindow*)this, (GLFWwindowsizefun) callback);
 }
 
-void window::set_close_callback(window_close_callback callback) const noexcept {
+void window::set_close_callback(close_callback callback) const noexcept {
 	glfwSetWindowCloseCallback((GLFWwindow*)this, (GLFWwindowclosefun) callback);
 }
 
-void window::set_refresh_callback(window_refresh_callback callback) const noexcept {
+void window::set_refresh_callback(refresh_callback callback) const noexcept {
 	glfwSetWindowRefreshCallback((GLFWwindow*)this, (GLFWwindowrefreshfun) callback);
 }
 
-void window::set_focus_callback(window_focus_callback callback) const noexcept {
+void window::set_focus_callback(focus_callback callback) const noexcept {
 	glfwSetWindowFocusCallback((GLFWwindow*)this, (GLFWwindowfocusfun) callback);
 }
 
-void window::set_iconify_callback(window_iconify_callback callback) const noexcept {
+void window::set_iconify_callback(iconify_callback callback) const noexcept {
 	glfwSetWindowIconifyCallback((GLFWwindow*)this, (GLFWwindowiconifyfun) callback);
 }
 

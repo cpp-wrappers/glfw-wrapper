@@ -6,8 +6,7 @@
 #include <functional>
 
 #include "key.hpp"
-#include "unified_math/vec2.hpp"
-#include "unified_math/to.hpp"
+#include "math/tuple.hpp"
 #include <memory>
 
 namespace glfw {
@@ -21,22 +20,29 @@ public:
 	bool should_close();
 	void swap_buffers();
 	void pos(int x, int y);
-	void pos(uni::vec2i auto pos) {
-		pos(get<0>(pos), get<1>(pos));
+
+	template<math::tuple_of<int, int> V>
+	requires(math::size<V> == 2)
+	void pos(V pos) {
+		pos(math::element<0>(pos), math::element<1>(pos));
 	}
 
 	void cursor_pos(double x, double y);
-	void cursor_pos(uni::vec2d auto pos) {
-		pos(get<0>(pos), get<1>(pos));
+
+	template<math::tuple_of<double,double> V>
+	requires(math::size<V> == 2)
+	void cursor_pos(V pos) {
+		cursor_pos(math::element<0>(pos), math::element<1>(pos));
 	}
 
 	std::pair<unsigned, unsigned> framebuffer_size();
 	std::pair<unsigned, unsigned> size();
 
-	template<uni::any_vec2 V>
+	template<math::tuple_of V>
+	requires(math::size<V> == 2)
 	V framebuffer_size() {
 		auto s = framebuffer_size();
-		return { get<0>(s), get<1>(s) };
+		return { math::element<0>(s), math::element<1>(s) };
 	}
 
 	explicit operator bool() { return !should_close(); }

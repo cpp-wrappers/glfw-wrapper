@@ -1,28 +1,25 @@
 #pragma once
 
-#include <stdexcept>
- 
+#include "headers.hpp"
+
 namespace glfw {
 
-namespace internal {
-	int get_error(const char** desc);
-}
+	enum class error {
+		no = GLFW_NO_ERROR,
+		not_initialized = GLFW_NOT_INITIALIZED,
+		no_current_context = GLFW_NO_CURRENT_CONTEXT,
+		invalid_enum = GLFW_INVALID_ENUM,
+		invalid_value = GLFW_INVALID_VALUE,
+		out_of_memory = GLFW_OUT_OF_MEMORY,
+		api_unavailable = GLFW_API_UNAVAILABLE,
+		version_unavailable = GLFW_VERSION_UNAVAILABLE,
+		platform_error = GLFW_PLATFORM_ERROR,
+		format_unavailable = GLFW_FORMAT_UNAVAILABLE,
+		no_window_context = GLFW_NO_WINDOW_CONTEXT
+	};
 
-inline auto
-get_error() noexcept {
-	const char* str;
-	int code = internal::get_error(&str);
+	inline glfw::error get_error() {
+		return (glfw::error) glfwGetError(nullptr);
+	}
 
-	struct {
-		int code;
-		const char* description;
-	} res{code, str};
-	return res;
-}
-
-struct error : std::runtime_error {
-	using std::runtime_error::runtime_error;
-	error() : std::runtime_error{ get_error().description } {}
-};
-
-}
+} // glfw

@@ -2,7 +2,7 @@
 
 #include "error.hpp"
 
-extern "C" void abort();
+extern "C"  void __MINGW_ATTRIB_NORETURN abort();
 
 namespace glfw {
 

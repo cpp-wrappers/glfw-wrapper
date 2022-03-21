@@ -34,9 +34,9 @@ namespace glfw {
 		}
 
 		auto result = glfwCreateWindow(
-			width,
-			height,
-			title,
+			(int) width,
+			(int) height,
+			title.begin(),
 			(GLFWmonitor*) nullptr,
 			(GLFWwindow*) nullptr
 		);

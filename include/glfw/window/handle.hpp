@@ -22,4 +22,12 @@ struct handle<glfw::window> {
 		return m_raw;
 	}
 
+	inline bool should_close() const;
+
 };
+
+#include "should_close.hpp"
+
+inline bool handle<glfw::window>::should_close() const {
+	return glfw::window_should_close(*this);
+}

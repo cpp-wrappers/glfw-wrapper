@@ -5,8 +5,8 @@
 
 namespace glfw {
 
-	inline glfw::error try_init() {
-		return (glfw::error) glfwInit();
+	inline bool try_init() {
+		return glfwInit();
 	}
 
 }

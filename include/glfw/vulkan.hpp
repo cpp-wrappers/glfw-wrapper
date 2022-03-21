@@ -6,7 +6,7 @@
 
 #include "headers.hpp"
 #include "error.hpp"
-#include "default_unexpected_handler.hpp"
+#include "unexpected_handler.hpp"
 
 namespace glfw {
 
@@ -27,7 +27,7 @@ namespace glfw {
 	inline span<c_string> get_required_instance_extensions() {
 		auto result = glfw::try_get_required_instance_extensions();
 		if(result.is_unexpected()) {
-			glfw::default_unexpected_handler(result.get_unexpected());
+			glfw::unexpected_handler(result.get_unexpected());
 		}
 		return result.get_expected();
 	}

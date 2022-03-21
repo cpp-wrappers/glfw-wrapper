@@ -2,7 +2,7 @@
 
 #include "handle.hpp"
 #include "../error.hpp"
-#include "../default_unexpected_handler.hpp"
+#include "../unexpected_handler.hpp"
 
 #include <core/c_string.hpp>
 #include <core/expected.hpp>
@@ -52,7 +52,7 @@ namespace glfw {
 	handle<glfw::window> create_window(Args&&... args) {
 		expected<handle<glfw::window>, glfw::error> result = glfw::try_create_window(forward<Args>(args)...);
 		if(result.is_unexpected()) {
-			default_unexpected_handler(result.get_unexpected());
+			unexpected_handler(result.get_unexpected());
 		}
 
 		return result.get_expected();

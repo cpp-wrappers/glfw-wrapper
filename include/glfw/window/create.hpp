@@ -7,7 +7,7 @@
 #include <core/c_string.hpp>
 #include <core/expected.hpp>
 #include <core/wrapper/of_integer.hpp>
-#include <core/meta/types/are_exclusively_satsify_predicates.hpp>
+#include <core/meta/types/are_exclusively_satisfying_predicates.hpp>
 #include <core/meta/decayed_same_as.hpp>
 
 namespace glfw {
@@ -17,7 +17,7 @@ namespace glfw {
 	struct title : c_string {};
 
 	template<typename... Args>
-	requires types::are_exclusively_satsify_predicates<
+	requires types::are_exclusively_satisfying_predicates<
 		types::are_contain_one_decayed<glfw::width>,
 		types::are_contain_one_decayed<glfw::height>,
 		types::are_may_contain_one_decayed<glfw::title>
@@ -29,9 +29,9 @@ namespace glfw {
 		auto height = elements::decayed_same_as<glfw::height>(args...);
 		c_string title{};
 
-		if constexpr (types::are_contain_decayed<glfw::title>::for_types<Args...>) {
-			title = elements::decayed_same_as<glfw::title>(args...);
-		}
+		if constexpr (
+			types::are_contain_decayed<glfw::title>::for_types<Args...>
+		) { title = elements::decayed_same_as<glfw::title>(args...); }
 
 		auto result = glfwCreateWindow(
 			(int) width,
@@ -50,11 +50,10 @@ namespace glfw {
 
 	template<typename... Args>
 	handle<glfw::window> create_window(Args&&... args) {
-		expected<handle<glfw::window>, glfw::error> result = glfw::try_create_window(forward<Args>(args)...);
+		auto result = glfw::try_create_window(forward<Args>(args)...);
 		if(result.is_unexpected()) {
 			unexpected_handler(result.get_unexpected());
 		}
-
 		return result.get_expected();
 	}
 

@@ -1,21 +1,23 @@
 #pragma once
 
-#include "headers.hpp"
+#include "function.hpp"
+
+extern "C" GLFW_API int glfwGetError(const char** description);
 
 namespace glfw {
 
 	enum class error {
-		no = GLFW_NO_ERROR,
-		not_initialized = GLFW_NOT_INITIALIZED,
-		no_current_context = GLFW_NO_CURRENT_CONTEXT,
-		invalid_enum = GLFW_INVALID_ENUM,
-		invalid_value = GLFW_INVALID_VALUE,
-		out_of_memory = GLFW_OUT_OF_MEMORY,
-		api_unavailable = GLFW_API_UNAVAILABLE,
-		version_unavailable = GLFW_VERSION_UNAVAILABLE,
-		platform_error = GLFW_PLATFORM_ERROR,
-		format_unavailable = GLFW_FORMAT_UNAVAILABLE,
-		no_window_context = GLFW_NO_WINDOW_CONTEXT
+		no                  = 0,
+		not_initialized     = 0x00010001,
+		no_current_context  = 0x00010002,
+		invalid_enum        = 0x00010003,
+		invalid_value       = 0x00010004,
+		out_of_memory       = 0x00010005,
+		api_unavailable     = 0x00010006,
+		version_unavailable = 0x00010007,
+		platform_error      = 0x00010008,
+		format_unavailable  = 0x00010009,
+		no_window_context   = 0x0001000A
 	};
 
 	inline glfw::error get_error() {

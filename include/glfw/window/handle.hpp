@@ -1,8 +1,6 @@
 #pragma once
 
-#include <core/handle/declaration.hpp>
-
-#include "../headers.hpp"
+#include <core/handle.hpp>
 
 namespace glfw {
 
@@ -12,7 +10,7 @@ namespace glfw {
 
 template<>
 struct handle<glfw::window> {
-	GLFWwindow* m_raw;
+	void* m_raw;
 
 	auto& raw() const {
 		return m_raw;

@@ -3,18 +3,30 @@
 #include "handle.hpp"
 #include "../error.hpp"
 #include "../unexpected_handler.hpp"
+#include "../function.hpp"
 
 #include <core/c_string.hpp>
 #include <core/expected.hpp>
-#include <core/wrapper/of_integer.hpp>
 #include <core/meta/types/are_exclusively_satisfying_predicates.hpp>
 #include <core/meta/decayed_same_as.hpp>
 
 namespace glfw {
 
-	struct width : wrapper::of_integer<int32> {};
-	struct height : wrapper::of_integer<int32> {};
+	struct width  { int32 _; };
+	struct height { int32 _; };
 	struct title : c_string {};
+
+}
+
+extern "C" GLFW_API handle<glfw::window> glfwCreateWindow(
+	glfw::width width,
+	glfw::height height,
+	glfw::title title,
+	void* monitor,
+	void* share
+);
+
+namespace glfw {
 
 	template<typename... Args>
 	requires types::are_exclusively_satisfying_predicates<
@@ -27,21 +39,21 @@ namespace glfw {
 	try_create_window(Args&&... args) {
 		auto width = elements::decayed_same_as<glfw::width>(args...);
 		auto height = elements::decayed_same_as<glfw::height>(args...);
-		c_string title{};
+		glfw::title title{};
 
 		if constexpr (
 			types::are_contain_decayed<glfw::title>::for_types<Args...>
 		) { title = elements::decayed_same_as<glfw::title>(args...); }
 
 		auto result = glfwCreateWindow(
-			(int) width,
-			(int) height,
-			title.begin(),
-			(GLFWmonitor*) nullptr,
-			(GLFWwindow*) nullptr
+			width,
+			height,
+			title,
+			nullptr,
+			nullptr
 		);
 
-		if(result == nullptr) {
+		if(result.raw() == nullptr) {
 			return glfw::get_error();
 		}
 

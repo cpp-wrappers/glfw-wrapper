@@ -2,10 +2,12 @@
 
 #include "handle.hpp"
 
+extern "C" GLFW_API void glfwDestroyWindow(handle<glfw::window> window);
+
 namespace glfw {
 
 	inline void destroy_window(handle<glfw::window> window) {
-		glfwDestroyWindow((GLFWwindow*) window.raw());
+		glfwDestroyWindow(window);
 	}
 
 } // glfw

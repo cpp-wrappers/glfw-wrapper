@@ -1,14 +1,14 @@
 #pragma once
 
 #include "handle.hpp"
-#include "../headers.hpp"
+#include "../function.hpp"
 
-#include <core/handle/possibly_guarded_of.hpp>
+extern "C" GLFW_API int glfwWindowShouldClose(handle<glfw::window> window);
 
 namespace glfw {
 
-	bool window_should_close(possibly_guarded_handle_of<glfw::window> auto&& handle) {
-		return glfwWindowShouldClose(handle.raw());
+	bool inline window_should_close(handle<glfw::window> window) {
+		return glfwWindowShouldClose(window);
 	}
 
 } // glfw

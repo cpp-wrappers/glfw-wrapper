@@ -1,12 +1,16 @@
 #pragma once
 
+#include "error.hpp"
+#include "unexpected_handler.hpp"
+#include "function.hpp"
+
 #include <core/span.hpp>
 #include <core/c_string.hpp>
 #include <core/expected.hpp>
 
-#include "headers.hpp"
-#include "error.hpp"
-#include "unexpected_handler.hpp"
+extern "C" GLFW_API const char** glfwGetRequiredInstanceExtensions(uint32* count);
+
+extern "C" GLFW_API int glfwVulkanSupported(void);
 
 namespace glfw {
 
@@ -32,4 +36,4 @@ namespace glfw {
 		return result.get_expected();
 	}
 
-}
+} // glfw

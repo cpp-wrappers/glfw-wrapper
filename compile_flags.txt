@@ -7,5 +7,6 @@
 -ftemplate-backtrace-limit=0
 -I../core/include
 -I../math/include
+-I../vulkan-wrapper/include
 -fmodules
 -Xclang -fimplicit-module-maps

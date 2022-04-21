@@ -7,10 +7,10 @@
 namespace glfw {
 
 	[[ noreturn ]]
-	inline void unexpected_handler();
+	void unexpected_handler();
 
 	[[ noreturn ]]
-	inline void unexpected_handler([[maybe_unused]] glfw::error result);
+	void unexpected_handler(glfw::error);
 
 } // glfw
 

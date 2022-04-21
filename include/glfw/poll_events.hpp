@@ -1,6 +1,8 @@
 #pragma once
 
-#include "headers.hpp"
+#include "function.hpp"
+
+extern "C" GLFW_API void glfwPollEvents();
 
 namespace glfw {
 
@@ -8,4 +10,4 @@ namespace glfw {
 		glfwPollEvents();
 	}
 
-}
+} // glfw

@@ -1,7 +1,9 @@
 #pragma once
 
-#include "headers.hpp"
+#include "function.hpp"
 #include "error.hpp"
+
+extern "C" GLFW_API int glfwInit();
 
 namespace glfw {
 
@@ -9,4 +11,4 @@ namespace glfw {
 		return glfwInit();
 	}
 
-}
+} // glfw

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <core/handle.hpp>
+#include <math/vector.hpp>
 
 namespace glfw {
 
@@ -20,12 +21,10 @@ struct handle<glfw::window> {
 		return m_raw;
 	}
 
-	inline bool should_close() const;
+	inline math::vector<double, 2> get_cursor_pos() const;
 
+	inline bool should_close() const;
 };
 
 #include "should_close.hpp"
-
-inline bool handle<glfw::window>::should_close() const {
-	return glfw::window_should_close(*this);
-}
+#include "get_cursor_pos.hpp"

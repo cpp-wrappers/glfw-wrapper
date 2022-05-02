@@ -12,3 +12,7 @@ namespace glfw {
 	}
 
 } // glfw
+
+inline bool handle<glfw::window>::should_close() const {
+	return glfw::window_should_close(*this);
+}

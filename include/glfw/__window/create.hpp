@@ -63,7 +63,7 @@ namespace glfw::internal {
 				get_decayed_same_as<glfw::title>();
 		}
 
-		void* result = glfwCreateWindow(
+		glfw::window* result = (glfw::window*) glfwCreateWindow(
 			(int) width, (int) height, title.iterator(),
 			nullptr, nullptr
 		);

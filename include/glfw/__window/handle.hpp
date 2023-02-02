@@ -8,15 +8,25 @@
 	#include <vk/surface.hpp>
 #endif
 
+#include "../__internal/key.hpp"
+
 namespace glfw {
 
 	struct window;
+
+	using key_callback_t = void(*)(
+		glfw::window* window,
+		glfw::key::code key,
+		int scancode,
+		glfw::key::action action,
+		glfw::key::modifiers mods
+	);
 
 } // glfw
 
 template<>
 struct handle_underlying_t<glfw::window> {
-	using type = void*;
+	using type = glfw::window*;
 	static constexpr type invalid = nullptr;
 };
 
@@ -31,6 +41,8 @@ struct handle_interface<glfw::window> : handle_interface_base<glfw::window> {
 			handle<vk::instance> instance
 		);
 	#endif
+
+	glfw::key_callback_t set_key_callback(glfw::key_callback_t callback) const;
 
 };
 

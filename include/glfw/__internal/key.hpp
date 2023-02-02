@@ -1,5 +1,7 @@
 #pragma once
 
+#include <enum_flags.hpp>
+
 namespace glfw {
 
 	namespace key {
@@ -9,15 +11,14 @@ namespace glfw {
 			release, press, repeat
 		};
 	
-		using modifier = int;
-	
-		namespace modifiers {
-			inline constexpr modifier
-				shift = 1,
-				control = 1 << 1,
-				alt = 1 << 2,
-				super = 1<<3;
+		enum class modifier {
+			shift = 1,
+			control = 1 << 1,
+			alt = 1 << 2,
+			super = 1 << 3
 		};
+	
+		using modifiers = enum_flags<glfw::key::modifier>;
 	};
 
 	namespace keys {

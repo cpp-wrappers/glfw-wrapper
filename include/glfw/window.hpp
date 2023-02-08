@@ -6,3 +6,5 @@
 #include "./__window/get_cursor_pos.hpp"
 #include "./__window/get_window_size.hpp"
 #include "./__window/set_key_callback.hpp"
+#include "./__window/should_close.hpp"
+#include "./__window/show.hpp"

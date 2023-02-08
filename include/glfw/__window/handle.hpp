@@ -32,8 +32,13 @@ struct handle_underlying_t<glfw::window> {
 
 template<>
 struct handle_interface<glfw::window> : handle_interface_base<glfw::window> {
+
+	inline void show() const;
+
 	inline math::vector<double, 2> get_cursor_pos() const;
+
 	inline math::vector<int, 2> get_size() const;
+
 	inline bool should_close() const;
 
 	#if __has_include(<vk/instance.hpp>)
@@ -45,6 +50,3 @@ struct handle_interface<glfw::window> : handle_interface_base<glfw::window> {
 	glfw::key_callback_t set_key_callback(glfw::key_callback_t callback) const;
 
 };
-
-#include "should_close.hpp"
-#include "get_cursor_pos.hpp"

@@ -11,6 +11,8 @@
 #include <tuple.hpp>
 #include <body.hpp>
 
+#include <unicode/utf8.hpp>
+
 namespace glfw {
 
 	class width {
@@ -27,14 +29,14 @@ namespace glfw {
 		explicit operator int () const { return value_; }
 	};
 
-	struct title : c_string_of_unknown_size {};
+	struct title : c_string_of_unknown_size<utf8::unit> {};
 
 }
 
 extern "C" GLFW_API void* glfwCreateWindow(
 	int width,
 	int height,
-	const char* title,
+	const utf8::unit* title,
 	void* monitor,
 	void* share
 );
@@ -55,7 +57,7 @@ namespace glfw::internal {
 		glfw::height height = tuple{ args... }.template
 			get_decayed_same_as<glfw::height>();
 
-		glfw::title title{ "" };
+		glfw::title title{ u8"" };
 		if constexpr (types<Args...>::template
 			count_of_decayed_same_as<glfw::title> == 1
 		) {

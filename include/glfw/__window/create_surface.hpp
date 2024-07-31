@@ -22,16 +22,16 @@ namespace glfw {
 
 	template<typename... Args>
 	requires types<Args...>::template exclusively_satisfy_predicates<
-		count_of_decayed_same_as<handle<vk::instance>> == 1,
-		count_of_decayed_same_as<handle<glfw::window>> == 1
+		count_of<is_same_as<handle<vk::instance>>.decayed> == 1,
+		count_of<is_same_as<handle<glfw::window>>.decayed> == 1
 	>
 	vk::expected<handle<vk::surface>>
 	try_create_window_surface(Args&&... args) {
 		handle<vk::instance> instance = tuple{ args... }.template
-			get_decayed_same_as<handle<vk::instance>>();
+			get<is_same_as<handle<vk::instance>>.decayed>();
 
 		handle<glfw::window> window = tuple{ args... }.template
-			get_decayed_same_as<handle<glfw::window>>();
+			get<is_same_as<handle<glfw::window>>.decayed>();
 
 		handle<vk::surface> surface;
 

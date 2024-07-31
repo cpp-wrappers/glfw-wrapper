@@ -36,7 +36,7 @@ namespace glfw {
 	struct instance {
 
 		instance() {
-			if(!glfwInit()) {
+			if (!glfwInit()) {
 				glfw::unexpected_handler();
 			}
 		}
@@ -65,14 +65,14 @@ namespace glfw {
 		}
 
 		inline void* get_global_proc_address(
-			any_c_string auto proc_name
+			c_string<char> proc_name
 		) const {
 			return glfwGetInstanceProcAddress(nullptr, proc_name.iterator());
 		}
 
 		inline void* get_instance_proc_address(
 			handle<vk::instance> instance,
-			any_c_string auto proc_name
+			c_string<char> proc_name
 		) const {
 			return glfwGetInstanceProcAddress(
 				instance.underlying(),
@@ -84,7 +84,7 @@ namespace glfw {
 		try_get_required_instance_extensions() const {
 			uint32 count;
 			const char** result = glfwGetRequiredInstanceExtensions(&count);
-			if(result == nullptr) {
+			if (result == nullptr) {
 				return glfw::error{ glfw::get_error() };
 			}
 			return span<vk::extension_name> {
@@ -95,7 +95,7 @@ namespace glfw {
 		inline span<vk::extension_name>
 		get_required_instance_extensions() const {
 			auto result = this->try_get_required_instance_extensions();
-			if(result.is_unexpected()) {
+			if (result.is_unexpected()) {
 				glfw::unexpected_handler(result.get_unexpected());
 			}
 			return result.get_expected();

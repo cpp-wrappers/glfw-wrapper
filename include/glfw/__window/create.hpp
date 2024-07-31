@@ -29,7 +29,7 @@ namespace glfw {
 		explicit operator int () const { return value_; }
 	};
 
-	struct title : c_string_of_unknown_size<utf8::unit> {};
+	struct title : c_string<utf8::unit> {};
 
 }
 
@@ -45,24 +45,24 @@ namespace glfw::internal {
 
 	template<typename... Args>
 	requires types<Args...>::template exclusively_satisfy_predicates<
-		count_of_decayed_same_as<glfw::width> == 1,
-		count_of_decayed_same_as<glfw::height> == 1,
-		count_of_decayed_same_as<glfw::title> <= 1
+		is_same_as<glfw::width>.decayed == 1,
+		is_same_as<glfw::height>.decayed == 1,
+		is_same_as<glfw::title>.decayed <= 1
 	>
 	expected<handle<glfw::window>, glfw::error>
 	try_create_window(Args&&... args) {
 		glfw::width width = tuple{ args... }.template
-			get_decayed_same_as<glfw::width>();
+			get<is_same_as<glfw::width>.decayed>();
 
 		glfw::height height = tuple{ args... }.template
-			get_decayed_same_as<glfw::height>();
+			get<is_same_as<glfw::height>.decayed>();
 
-		glfw::title title{ u8"" };
+		glfw::title title{ u8""s };
 		if constexpr (types<Args...>::template
-			count_of_decayed_same_as<glfw::title> == 1
+			count_of<is_same_as<glfw::title>.decayed> == 1
 		) {
 			title = tuple{ args... }.template
-				get_decayed_same_as<glfw::title>();
+				get<is_same_as<glfw::title>.decayed>();
 		}
 
 		glfw::window* result = (glfw::window*) glfwCreateWindow(
@@ -70,7 +70,7 @@ namespace glfw::internal {
 			nullptr, nullptr
 		);
 
-		if(result == nullptr) {
+		if (result == nullptr) {
 			return glfw::get_error();
 		}
 
@@ -81,7 +81,7 @@ namespace glfw::internal {
 	handle<glfw::window> create_window(Args&&... args) {
 		expected<handle<glfw::window>, glfw::error> result
 			= glfw::internal::try_create_window(forward<Args>(args)...);
-		if(result.is_unexpected()) {
+		if (result.is_unexpected()) {
 			unexpected_handler(result.get_unexpected());
 		}
 		return move(result.get_expected());

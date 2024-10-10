@@ -3,6 +3,10 @@
 #include <handle.hpp>
 #include <math/vector.hpp>
 
+#include "../__internal/function.hpp"
+
+extern "C" GLFW_API int glfwGetKey(struct GLFWwindow* window, int key);
+
 #if __has_include(<vk/instance.hpp>) && __has_include(<vk/surface.hpp>)
 	#include <vk/instance.hpp>
 	#include <vk/surface.hpp>
@@ -48,5 +52,11 @@ struct handle_interface<glfw::window> : handle_interface_base<glfw::window> {
 	#endif
 
 	glfw::key_callback_t set_key_callback(glfw::key_callback_t callback) const;
+
+	glfw::key::action get_key(glfw::key::code key_code) const {
+		return (glfw::key::action) ::glfwGetKey(
+			(struct GLFWwindow*) underlying(), (int) key_code
+		);
+	}
 
 };
